@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "65333563976",
+    "project_id": "cost-management-be09d",
+    "storage_bucket": "cost-management-be09d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:65333563976:android:0051dfbbb50684cc673e7d",
+        "android_client_info": {
+          "package_name": "com.example.cost_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCguOoeh4MnPPf3kyZDRkoqXu3Sb2y34nw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

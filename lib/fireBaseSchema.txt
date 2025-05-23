@@ -1,0 +1,49 @@
+clients (Collection)
+│
+├── clientId_123 (Document)
+│   ├── name: "Mohamed Ahmed"
+│   ├── email: "mohamed@gmail.com"
+│   ├── phone: "01012345678"
+│   ├── createdAt: timestamp
+
+invoices (Collection)
+│
+├── invoiceId_001 (Document)
+│   ├── clientId: "clientId_123"
+│   ├── amount: 1000.0
+│   ├── status: "unpaid" // "paid", "overdue"
+│   ├── dueDate: timestamp
+│   ├── createdAt: timestamp
+│   ├── updatedAt: timestamp
+│   ├── lastPaymentDate: timestamp
+│   ├── totalPaid: 900
+
+
+payments (Collection)
+│
+├── paymentId_987 (Document)
+│   ├── invoiceId: "invoiceId_001"
+│   ├── clientId: "clientId_123"
+│   ├── amount: 500.0
+│   ├── method: "cash" // "credit", "bank transfer"
+│   ├── paidAt: timestamp
+
+receipts (Collection)
+│
+├── receiptId_567 (Document)
+│   ├── invoiceId: "invoiceId_001"
+│   ├── paymentId: "paymentId_987"
+│   ├── generatedAt: timestamp
+
+invoicePaymentHistory (Collection)
+│
+├── invoiceId_001 (Document)
+│   ├── payments: [
+│       {
+│         paymentId: "paymentId_987",
+│         amount: 500,
+│         method: "cash",
+│         paidAt: timestamp
+│       },
+│       ...
+│     ]
