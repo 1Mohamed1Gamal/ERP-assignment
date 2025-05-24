@@ -57,6 +57,15 @@ class _InvoiceStatusScreenState extends State<InvoiceStatusScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Always refresh invoices when the page is shown again
+    if (_userId != null) {
+      _fetchAllInvoicesOnce();
+    }
+  }
+
+  @override
   void dispose() {
     _invoiceIdController.dispose();
     _animationController.dispose();

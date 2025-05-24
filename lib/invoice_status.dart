@@ -59,6 +59,11 @@ class InvoiceStatusService {
           'remaining': remaining,
         });
       }
+      // Remove duplicates by invoiceId
+      final seen = <String>{};
+      _allInvoices = _allInvoices
+          .where((invoice) => seen.add(invoice['invoiceId']))
+          .toList();
 
       applyFilterLocally(_selectedStatus, filterInvoiceId: null);
     } catch (e) {

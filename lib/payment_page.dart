@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'payment_generator.dart';
 import 'payment_logging_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PaymentPage extends StatefulWidget {
   final String invoiceId;
@@ -145,12 +146,6 @@ class _PaymentPageState extends State<PaymentPage>
         amount: amount,
         method: _selectedMethod,
       );
-      final logger = PaymentLoggingService();
-      await logger.logPayment(
-        invoiceId: invoiceId,
-        paymentAmount: amount,
-        paymentMethod: _selectedMethod,
-      );
 
       final paymentSnapshot = await generator.getPaymentById(paymentId);
       final paymentData = paymentSnapshot.data();
@@ -170,9 +165,9 @@ class _PaymentPageState extends State<PaymentPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Invoice ID: $invoiceId'),
-                Text('Amount: \$${amount.toStringAsFixed(2)}'),
+                Text('Amount: \\${amount.toStringAsFixed(2)}'),
                 Text('Method: $_selectedMethod'),
-                Text('Paid At: ${paidAt.toLocal()}'),
+                Text('Paid At: \\${paidAt.toLocal()}'),
                 const SizedBox(height: 16),
                 Center(
                   child: ElevatedButton(

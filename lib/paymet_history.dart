@@ -26,6 +26,23 @@ class _PaymentHistoryLogState extends State<PaymentHistoryLog>
 
   String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
+  // --- Payment Method Filter State ---
+  String _selectedMethodFilter = 'all';
+  final List<String> _methodFilters = [
+    'all',
+    'cash',
+    'credit',
+    'bank transfer'
+  ];
+  List<Map<String, dynamic>> get filteredPayments {
+    if (_selectedMethodFilter == 'all') return payments;
+    return payments
+        .where(
+            (p) => (p['method'] ?? '').toLowerCase() == _selectedMethodFilter)
+        .toList();
+  }
+  // --- End Payment Method Filter State ---
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +105,9 @@ class _PaymentHistoryLogState extends State<PaymentHistoryLog>
       }).toList();
 
       payments = fetchedPayments;
+      // Remove duplicates by paymentId
+      final seen = <String>{};
+      payments = payments.where((p) => seen.add(p['paymentId'])).toList();
       // Sort payments by paidAt from recent to older
       payments.sort((a, b) {
         final aPaidAt = a['paidAt'];
@@ -141,6 +161,9 @@ class _PaymentHistoryLogState extends State<PaymentHistoryLog>
       }).toList();
 
       payments = fetchedPayments;
+      // Remove duplicates by paymentId
+      final seen = <String>{};
+      payments = payments.where((p) => seen.add(p['paymentId'])).toList();
       // Sort payments by paidAt from recent to older
       payments.sort((a, b) {
         final aPaidAt = a['paidAt'];
@@ -271,6 +294,56 @@ class _PaymentHistoryLogState extends State<PaymentHistoryLog>
     );
   }
 
+  Widget _buildMethodFilterButtons() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8,
+      runSpacing: 8,
+      children: _methodFilters.map((filter) {
+        final isSelected = _selectedMethodFilter == filter;
+        return ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedMethodFilter = filter;
+              _animationController?.reset();
+              _animationController?.forward();
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            foregroundColor: isSelected ? Colors.white : Colors.black,
+            backgroundColor:
+                isSelected ? Colors.orange : Colors.orange.shade100,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            elevation: isSelected ? 4 : 0,
+          ),
+          child: Text(
+            filter[0].toUpperCase() + filter.substring(1),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildAnimatedPaymentCard(Map<String, dynamic> payment, int index) {
+    return FadeTransition(
+      opacity: _fadeAnimation!,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.2),
+          end: Offset.zero,
+        ).animate(_fadeAnimation!),
+        child: _buildPaymentCard(payment),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -333,19 +406,22 @@ class _PaymentHistoryLogState extends State<PaymentHistoryLog>
                 ),
               );
             }),
-            SizedBox(height: 20),
+            const SizedBox(height: 12),
+            _buildMethodFilterButtons(),
+            const SizedBox(height: 20),
             Expanded(
               child: loading
                   ? Center(
                       child: CircularProgressIndicator(color: Colors.orange))
-                  : payments.isEmpty
+                  : filteredPayments.isEmpty
                       ? Center(child: Text('No payment history found'))
                       : FadeTransition(
                           opacity: _fadeAnimation!,
                           child: ListView.builder(
-                            itemCount: payments.length,
+                            itemCount: filteredPayments.length,
                             itemBuilder: (_, index) =>
-                                _buildPaymentCard(payments[index]),
+                                _buildAnimatedPaymentCard(
+                                    filteredPayments[index], index),
                           ),
                         ),
             ),

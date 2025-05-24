@@ -80,4 +80,27 @@ class InvoiceSummarySDK {
 
     return InvoiceSummaryReport(summaryMap.values.toList());
   }
+
+  // New: Payment-based report by method
+  Future<Map<String, double>> generatePaymentMethodReport({
+    required DateTime startDate,
+    required DateTime endDate,
+    String? clientId,
+  }) async {
+    var query = _firestore.collection('payments')
+        .where('paidAt', isGreaterThanOrEqualTo: startDate)
+        .where('paidAt', isLessThanOrEqualTo: endDate);
+    if (clientId != null && clientId.isNotEmpty) {
+      query = query.where('clientId', isEqualTo: clientId);
+    }
+    final snapshot = await query.get();
+    final methodTotals = <String, double>{};
+    for (final doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final method = data['method'] as String? ?? 'unknown';
+      final amount = (data['amount'] as num?)?.toDouble() ?? 0.0;
+      methodTotals[method] = (methodTotals[method] ?? 0) + amount;
+    }
+    return methodTotals;
+  }
 }
